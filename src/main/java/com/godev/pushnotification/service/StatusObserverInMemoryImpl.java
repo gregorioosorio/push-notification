@@ -30,11 +30,11 @@ public class StatusObserverInMemoryImpl implements StatusObserver {
 	@Override
 	public Flux<String> subscribe(long id) {
 		return Flux.<String>create(sink -> {
-			log.info("waiting for webhook of transaction [{}]", id);
+			log.info("waiting for webhook of transaction: [{}]", id);
 			pendingTransactions.put(id, sink);
 
 			sink.onDispose(() -> {
-				log.info("transaction with id [{}] is not longer observed: {}", pendingTransactions.get(id));
+				log.info("transaction with id: [{}] is not longer observed", id);
 				pendingTransactions.remove(id);
 			});
 		});
@@ -42,7 +42,7 @@ public class StatusObserverInMemoryImpl implements StatusObserver {
 
 	@Override
 	public void publish(long id, String data) {
-		log.info("a webhook for id: {} and data: {} was received", id, data);
+		log.info("a publish event for id: [{}] and data: [{}] was received", id, data);
 		if (pendingTransactions.containsKey(id)) {
 			pendingTransactions.get(id).next(data);
 			pendingTransactions.get(id).complete();
@@ -54,9 +54,9 @@ public class StatusObserverInMemoryImpl implements StatusObserver {
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
 		executorService.scheduleAtFixedRate(() -> {
-			log.info("-- keep alive ---");
+			log.info("keep alive process");
 			pendingTransactions.entrySet().forEach(e -> {
-				e.getValue().next("keep alive");
+				e.getValue().next("KEEP_ALIVE_EVENT");
 			});
 		}, KEEP_ALIVE_DELAY, KEEP_ALIVE_DELAY, TimeUnit.MILLISECONDS);
 	}

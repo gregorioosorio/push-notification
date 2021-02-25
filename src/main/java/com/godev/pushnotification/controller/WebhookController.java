@@ -27,6 +27,6 @@ public class WebhookController {
 	public void pushStatus(@PathVariable("id") Long id) {
 		log.info("webhook received for transaction id: [{}]", id);
 
-		statusObserver.publish(id, "transaction is ready");
+		statusObserver.publish(id, "READY_EVENT");
 	}
 }

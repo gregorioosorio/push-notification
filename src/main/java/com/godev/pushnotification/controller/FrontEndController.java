@@ -27,7 +27,7 @@ public class FrontEndController {
 
 	@GetMapping(path = "/{id}/status", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<String> getStatus(@PathVariable("id") Long id) {
-		log.info("get transaction id: {}", id);
+		log.info("somebody wants to know the status of transaction: [{}]", id);
 		return statusObserver.subscribe(id);
 	}
 }
